@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueChangeObserver<bool>(
         cacheKey: SettingsKeys.keyDarkMode,
-        defaultValue: SharedData.darkMode,
+        defaultValue: ThemeMode.system == ThemeMode.dark,
         builder: (builder, isDarkMode, context) {
           return MaterialApp(
             title: 'DeepFake GAN',
