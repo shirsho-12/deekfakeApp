@@ -3,7 +3,7 @@ import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 
 @immutable
 class SettingsKeys {
-  static const numIters = 'num_iters';
+  static const numIters = 'total_iters';
   static const learningRate = 'learning_rate';
   static const batchSize = 'batch_size';
 
@@ -33,7 +33,7 @@ class Constants {
       (Settings.getValue(SettingsKeys.batchSize, defaultValue: "8")!));
 
   final int numDomains = int.parse(
-      (Settings.getValue(SettingsKeys.numDomains, defaultValue: "2")!));
+      (Settings.getValue(SettingsKeys.numDomains, defaultValue: "1")!));
 
   final int latentDims = int.parse(
       (Settings.getValue(SettingsKeys.latentDims, defaultValue: "16")!));

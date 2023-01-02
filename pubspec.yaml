@@ -39,6 +39,7 @@ dependencies:
   flutter_settings_screens: ^0.3.3-null-safety+2
   file_picker_cross: ^4.4.2
   flex_color_scheme: ^5.1.0
+  http: ^0.13.5
 
 dev_dependencies:
   flutter_test:

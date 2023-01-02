@@ -45,12 +45,12 @@ class _OutputWidgetState extends State<OutputWidget> {
                   SizedBox(
                     width: width,
                     height: height * 0.36,
-                    child: outputPath != ""
+                    child: outputPath != "" && File(outputPath).existsSync()
                         ? Image.file(File(outputPath))
                         : Container(),
                   ),
                   SizedBox(height: height * 0.01),
-                  outputPath != ''
+                  outputPath != '' && File(outputPath).existsSync()
                       ? Center(
                           child: ElevatedButton(
                             onPressed: () async {

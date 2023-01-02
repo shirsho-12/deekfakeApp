@@ -24,7 +24,7 @@ class _SourceWidgetState extends State<SourceWidget> {
                   SizedBox(
                     width: width,
                     height: height * 0.36,
-                    child: sourcePath != ""
+                    child: sourcePath != "" && File(sourcePath).existsSync()
                         ? Image.file(File(sourcePath))
                         : Container(),
                   ),

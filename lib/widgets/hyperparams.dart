@@ -43,17 +43,17 @@ class _HyperParamsState extends State<HyperParams> {
             title: "Model Architecture",
             subtitle: "Set the architecture of the model",
             children: [
-              RadioSettingsTile(
-                title: "Number of Domains",
-                settingKey: SettingsKeys.numDomains,
-                values: const {
-                  "1": "1",
-                  "2": "2",
-                  "3": "3",
-                  "4": "4",
-                },
-                selected: presets.numDomains.toString(),
-              ),
+              // RadioSettingsTile(
+              //   title: "Number of Domains",
+              //   settingKey: SettingsKeys.numDomains,
+              //   values: const {
+              //     "1": "1",
+              //     "2": "2",
+              //     "3": "3",
+              //     "4": "4",
+              //   },
+              //   selected: presets.numDomains.toString(),
+              // ),
               RadioSettingsTile(
                 title: "Number of Latent Dimensions",
                 settingKey: SettingsKeys.latentDims,

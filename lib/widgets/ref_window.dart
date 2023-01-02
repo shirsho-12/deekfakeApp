@@ -25,9 +25,10 @@ class _ReferenceWidgetState extends State<ReferenceWidget> {
                   SizedBox(
                     width: width,
                     height: height * 0.36,
-                    child: referencePath != ""
-                        ? Image.file(File(referencePath))
-                        : Container(),
+                    child:
+                        referencePath != "" && File(referencePath).existsSync()
+                            ? Image.file(File(referencePath))
+                            : Container(),
                   ),
                   SizedBox(height: height * 0.01),
                   Center(
