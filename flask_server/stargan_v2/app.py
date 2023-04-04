@@ -19,7 +19,7 @@ from core.wing import FaceAligner
 from munch import Munch
 from os.path import join as ospj
 from pathlib import Path
-
+import shutil
 
 # def img_to_array(img):
 #     byte_arr = BytesIO()
@@ -229,10 +229,15 @@ def crop():
     if request.method == 'POST':
         text = json.loads(request.get_data())
         print(text)
-        text.pop("source_image")
+        source_path = Path(text.pop("source_image"))
+        output_path = Path(str(Path.cwd().parent.parent) +
+                           "/assets/src/img/temp")
+        output_path.mkdir(parents=True, exist_ok=True)
+        shutil.copy(source_path, output_path)
+
         text.pop("reference_image")
         if text["isSource"]:
-            text["src_dir"] = '../../assets/src/img'
+            text["src_dir"] = '../../assets/src/img/temp'
             text["result_dir"] = '../../assets/src/img'
         else:
             text["src_dir"] = '../../assets/ref/img'
@@ -247,7 +252,7 @@ def crop():
         input_dir = args.src_dir
         output_dir = args.result_dir
         app_cache['crop_args'] = args
-        face_aligner = FaceAligner(args.wing_path, args.lm_path, 256)
+        face_aligner = FaceAligner(args.wing_path, args.lm_path, 128)
         from torchvision import transforms
         from PIL import Image
 
@@ -272,6 +277,7 @@ def crop():
             save_image(x_aligned, 1, filename=os.path.join(
                 output_dir, "n_"+fname))
         print('Saved the aligned image to %s...' % fname)
+        shutil.copy(source_path, output_path)
         # align_faces(args, input_dir, output_dir)
         return {"status": "ok", "filename": "n_"+fnames[0]}
 

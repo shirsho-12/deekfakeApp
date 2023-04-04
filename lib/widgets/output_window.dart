@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:file_picker_cross/file_picker_cross.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gan_deepfake/flask_bloc/flask_bloc.dart';
 import 'package:gan_deepfake/services/flask_api.dart';
 import 'package:gan_deepfake/shared.dart';
 import 'dart:developer' as devtools show log;
@@ -92,10 +94,61 @@ class _OutputWidgetState extends State<OutputWidget> {
                       ? Center(
                           child: ElevatedButton(
                             onPressed: () async {
-                              FilePickerCross outputFile =
-                                  await FilePickerCross.fromInternalPath(
-                                      path: "temp/output.png");
-                              outputFile.exportToStorage();
+                              context
+                                  .read<FlaskBloc>()
+                                  .add(const SaveOutputImageEvent());
+                            },
+                            child: const Text(
+                              'Save Image',
+                            ),
+                          ),
+                        )
+                      : Container(),
+                ],
+              ),
+            ));
+  }
+}
+
+class Output extends StatelessWidget {
+  final String outputPath;
+  const Output({Key? key, required this.outputPath}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) => SafeArea(
+              child: Column(
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      devtools.log("Generate Image", name: "OutputWidget");
+                      context
+                          .read<FlaskBloc>()
+                          .add(const GenerateOutputImageEvent());
+                    },
+                    child: const Text(
+                      'Generate',
+                    ),
+                  ),
+                  SizedBox(
+                    width: width,
+                    height: height * 0.34,
+                    child: outputPath != ''
+                        ? Image.file(File(outputPath))
+                        : Container(),
+                  ),
+                  SizedBox(height: height * 0.01),
+                  outputPath != '' && File(outputPath).existsSync()
+                      ? Center(
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              context
+                                  .read<FlaskBloc>()
+                                  .add(const SaveOutputImageEvent());
                             },
                             child: const Text(
                               'Save Image',

@@ -1,22 +1,17 @@
 import 'dart:io';
 
-import 'package:file_picker_cross/file_picker_cross.dart';
 import 'package:flutter/material.dart';
-import 'package:gan_deepfake/shared.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gan_deepfake/flask_bloc/flask_bloc.dart';
 
-class ReferenceWidget extends StatefulWidget {
-  const ReferenceWidget({Key? key}) : super(key: key);
+class ReferenceWidget extends StatelessWidget {
+  final String referencePath;
+  const ReferenceWidget({super.key, required this.referencePath});
 
-  @override
-  State<ReferenceWidget> createState() => _ReferenceWidgetState();
-}
-
-class _ReferenceWidgetState extends State<ReferenceWidget> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    String referencePath = SharedData.referencePath;
 
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) => SafeArea(
@@ -37,30 +32,25 @@ class _ReferenceWidgetState extends State<ReferenceWidget> {
                       children: [
                         ElevatedButton(
                           onPressed: () async {
-                            // String? path = await SharedData.pickImage();
-                            FilePickerCross myFile =
-                                await FilePickerCross.importFromStorage(
-                              type: FileTypeCross.image,
-                            );
-                            if (myFile.path != null) {
-                              setState(() {
-                                referencePath = myFile.path!;
-                                SharedData.setReferencePath(referencePath);
-                              });
-                            }
+                            context
+                                .read<FlaskBloc>()
+                                .add(const SelectReferenceImageEvent());
                           },
                           child: const Text(
                             'Pick Reference Image',
                           ),
                         ),
-                        ElevatedButton(
-                          onPressed: () async {
-                            //! TODO: Image Crop -> MethodChannel
-                          },
-                          child: const Text(
-                            'Crop Face',
-                          ),
-                        ),
+                        // ElevatedButton(
+                        //   onPressed: () async {
+                        //      context
+                        //       .read<FlaskBloc>()
+                        //       .add(const CropReferenceImageEvent());
+                        // },
+                        //   },
+                        //   child: const Text(
+                        //     'Crop Face',
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),

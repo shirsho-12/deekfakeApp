@@ -1,22 +1,19 @@
 import 'dart:io';
 
-import 'package:file_picker_cross/file_picker_cross.dart';
 import 'package:flutter/material.dart';
-import 'package:gan_deepfake/shared.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gan_deepfake/flask_bloc/flask_bloc.dart';
+// import 'package:gan_deepfake/shared.dart';
+// String sourcePath = SharedData.sourcePath;
 
-class SourceWidget extends StatefulWidget {
-  const SourceWidget({Key? key}) : super(key: key);
+class SourceWidget extends StatelessWidget {
+  final String sourcePath;
+  const SourceWidget({Key? key, required this.sourcePath}) : super(key: key);
 
-  @override
-  State<SourceWidget> createState() => _SourceWidgetState();
-}
-
-class _SourceWidgetState extends State<SourceWidget> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    String sourcePath = SharedData.sourcePath;
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) => SafeArea(
               child: Column(
@@ -35,17 +32,9 @@ class _SourceWidgetState extends State<SourceWidget> {
                       children: [
                         ElevatedButton(
                           onPressed: () async {
-                            // String? path = await SharedData.pickImage();
-                            FilePickerCross myFile =
-                                await FilePickerCross.importFromStorage(
-                              type: FileTypeCross.image,
-                            );
-                            if (myFile.path != null) {
-                              setState(() {
-                                sourcePath = myFile.path!;
-                                SharedData.setSourcePath(sourcePath);
-                              });
-                            }
+                            context
+                                .read<FlaskBloc>()
+                                .add(const SelectSourceImageEvent());
                           },
                           child: const Text(
                             'Pick Source Image',
@@ -53,7 +42,9 @@ class _SourceWidgetState extends State<SourceWidget> {
                         ),
                         ElevatedButton(
                           onPressed: () async {
-                            //! TODO: Image Crop -> MethodChannel
+                            context
+                                .read<FlaskBloc>()
+                                .add(const CropSourceImageEvent());
                           },
                           child: const Text(
                             'Crop Face',

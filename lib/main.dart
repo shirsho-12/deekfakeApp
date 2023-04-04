@@ -1,6 +1,8 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
+import 'package:gan_deepfake/flask_bloc/flask_bloc.dart';
 import 'package:gan_deepfake/shared.dart';
 import 'package:gan_deepfake/widgets/hyperparams.dart';
 import 'package:gan_deepfake/widgets/ref_window.dart';
@@ -30,34 +32,36 @@ class MyApp extends StatelessWidget {
         defaultValue: ThemeMode.system == ThemeMode.dark,
         builder: (builder, isDarkMode, context) {
           return MaterialApp(
-            title: 'DeepFake GAN',
-            theme: FlexThemeData.light(
-              scheme: FlexScheme.flutterDash,
-              surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
-              blendLevel: 9,
-              subThemesData: const FlexSubThemesData(
-                blendOnLevel: 10,
-                blendOnColors: false,
+              title: 'DeepFake GAN',
+              theme: FlexThemeData.light(
+                scheme: FlexScheme.flutterDash,
+                surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
+                blendLevel: 9,
+                subThemesData: const FlexSubThemesData(
+                  blendOnLevel: 10,
+                  blendOnColors: false,
+                ),
+                visualDensity: FlexColorScheme.comfortablePlatformDensity,
+                // To use the playground font, add GoogleFonts package and uncomment
+                // fontFamily: GoogleFonts.notoSans().fontFamily,
               ),
-              visualDensity: FlexColorScheme.comfortablePlatformDensity,
-              // To use the playground font, add GoogleFonts package and uncomment
-              // fontFamily: GoogleFonts.notoSans().fontFamily,
-            ),
-            darkTheme: FlexThemeData.dark(
-              scheme: FlexScheme.flutterDash,
-              surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
-              blendLevel: 15,
-              subThemesData: const FlexSubThemesData(
-                blendOnLevel: 20,
+              darkTheme: FlexThemeData.dark(
+                scheme: FlexScheme.flutterDash,
+                surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
+                blendLevel: 15,
+                subThemesData: const FlexSubThemesData(
+                  blendOnLevel: 20,
+                ),
+                visualDensity: FlexColorScheme.comfortablePlatformDensity,
+                // To use the Playground font, add GoogleFonts package and uncomment
+                // fontFamily: GoogleFonts.notoSans().fontFamily,
               ),
-              visualDensity: FlexColorScheme.comfortablePlatformDensity,
-              // To use the Playground font, add GoogleFonts package and uncomment
-              // fontFamily: GoogleFonts.notoSans().fontFamily,
-            ),
-            themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-            debugShowCheckedModeBanner: false,
-            home: const HomePage(),
-          );
+              themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+              debugShowCheckedModeBanner: false,
+              home: BlocProvider(
+                create: (context) => FlaskBloc(),
+                child: const HomePage(),
+              ));
         });
   }
 }
@@ -88,28 +92,43 @@ class _HomePageState extends State<HomePage> {
               })
         ],
       ),
-      body: LayoutBuilder(
-        builder: (context, constraint) {
-          return GridView.builder(
-            itemCount: 4,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: constraint.maxWidth / constraint.maxHeight,
-            ),
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return const SourceWidget();
-              } else if (index == 1) {
-                return const ReferenceWidget();
-              } else if (index == 2) {
-                return const OutputWidget();
-              } else if (index == 3) {
-                return const HyperParams();
+      body: BlocBuilder<FlaskBloc, FlaskState>(
+        builder: (context, state) {
+          return LayoutBuilder(
+            builder: (context, constraint) {
+              if (state is HomeState) {
+                return GridView.builder(
+                  itemCount: 4,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio:
+                        constraint.maxWidth / constraint.maxHeight,
+                  ),
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return SourceWidget(
+                        sourcePath: state.sourceImagePath,
+                      );
+                    } else if (index == 1) {
+                      return ReferenceWidget(
+                        referencePath: state.referenceImagePath,
+                      );
+                    } else if (index == 2) {
+                      return Output(
+                        outputPath: state.outputImagePath,
+                      );
+                    } else if (index == 3) {
+                      return const HyperParams();
+                    }
+                    return Container(
+                      color: Colors.red,
+                      margin: const EdgeInsets.all(4.0),
+                    );
+                  },
+                );
+              } else {
+                return const Center(child: CircularProgressIndicator());
               }
-              return Container(
-                color: Colors.red,
-                margin: const EdgeInsets.all(4.0),
-              );
             },
           );
         },

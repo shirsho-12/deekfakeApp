@@ -70,7 +70,7 @@ class FlaskAPI {
 class StarGanModel {
   //  static String apiEndPoint = "v1/images/generations";
   // static String base = "api.openai.com";
-  static String baseUrl = "http://172.31.82.26:2500";
+  static String baseUrl = "http://172.31.82.129:2500";
 
   static Future<String> generateImage() async {
     Constants cache = Constants();
